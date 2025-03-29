@@ -2,8 +2,6 @@ import torch
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd.function import Function
-from torch.autograd import Variable
 
 
 class OriTripletLoss(nn.Module):
@@ -258,7 +256,6 @@ class DualModalityCenterLoss(nn.Module):
         inputsIRD=inputs[n//2:n]
 
         # Come to centers
-        #rgb1和ir1---rgb2和ir2
         centers = []
         centers_dual=[]
         centers_dualIR1 = []
@@ -296,15 +293,12 @@ class DualModalityCenterLoss(nn.Module):
         centers_dualRGB2 = torch.stack(centers_dualRGB2)#RGB2
         
         dist_pc_dual = (inputs - centers_dual)**2#+(inputs - centers)**2
-        #center_quar=torch.cat([centers_dualIR2,centers_dualIR1,centers_dualRGB2,centers_dualRGB1])
-        center_quar=torch.cat([centers_dualRGB1,centers_dualRGB2,centers_dualIR1,centers_dualIR2])
+        center_dual=torch.cat([centers_dualRGB1,centers_dualRGB2,centers_dualIR1,centers_dualIR2])
         #inter——class
-        #dist_quar=(centers_dualRGB1-centers_dualRGB2)**2+(centers_dualIR1-centers_dualIR2)**2
-        #dist_quar=(centers_dualRGB1-centers_dualIR1)**2+(centers_dualRGB2-centers_dualIR2)**2
-        dist_quar=(inputs-center_quar)**2
+        dist_dual=(inputs-center_dual)**2
         #set the alpha
         a=0
-        dist_quaro = a*dist_quar.sum(1).sqrt()
+        dist_dualo = a*dist_dual.sum(1).sqrt()
         dist_pc = (1-a)*dist_pc_dual.sum(1).sqrt()
         
   
@@ -322,7 +316,7 @@ class DualModalityCenterLoss(nn.Module):
         y = dist_an.data.new()
         y.resize_as_(dist_an.data)
         y.fill_(1)
-        loss = dist_pc.mean() + dist_an.mean()+dist_quaro.mean()
+        loss = dist_pc.mean() + dist_an.mean()+dist_dualo.mean()
         return loss/2 #,dist_pc.mean(), dist_an.mean()
 
  

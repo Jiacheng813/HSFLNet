@@ -202,9 +202,9 @@ class PNL(nn.Module):
         z = gate * W_y + (1 - gate) * x_h
         return z
 
-class MFA_block(nn.Module):
+class SSM_block(nn.Module):
     def __init__(self, high_dim, low_dim, flag):
-        super(MFA_block, self).__init__()
+        super(SSM_block, self).__init__()
 
         self.CNL = CNL(high_dim, low_dim, flag)
         self.PNL = PNL(high_dim, low_dim)
@@ -231,8 +231,8 @@ class embed_net(nn.Module):
         self.thermal_moduleA = thermal_moduleA(arch=arch)
         self.visible_moduleA = visible_moduleA(arch=arch)
         self.base_resnet = base_resnet(arch=arch)
-        self.MFA1 = MFA_block(256, 64, 0)
-        self.MFA2 = MFA_block(512, 256, 1)
+        self.SSM1 = SSM_block(256, 64, 0)
+        self.SSM2 = SSM_block(512, 256, 1)
         
         self.l2norm = Normalize(2)
 
@@ -257,13 +257,14 @@ class embed_net(nn.Module):
         self.weight_sep = 0.2
 
         self.hypergraph = HypergraphConv(
-            in_features=self.style_dim,  # 输入通道数
-            out_features=self.style_dim,  # 输出通道数
-            features_height=24,  # 假设特征图高度为 24
-            features_width=12,  # 假设特征图宽度为 12
+            in_features=self.style_dim,  # input channel size
+            out_features=self.style_dim,  # output channel size
+            features_height=24,  # assuming feature map height is 24
+            features_width=12,  # assuming feature map width is 12
             theta1=theta1,
             edges=edge
-            )
+        )
+
         # self.graphw = graphw
         self.graphw = nn.Parameter(torch.tensor(graphw, requires_grad=True))
         self.conv_reduce = nn.Conv2d(in_channels=2048, out_channels=self.style_dim, kernel_size=1, stride=1, padding=0)
@@ -297,18 +298,18 @@ class embed_net(nn.Module):
         # shared block
         x_low = x
         x = self.base_resnet.base.layer1(x) 
-        x = self.MFA1(x, x_low)
+        x = self.SSM1(x, x_low)
         x_low = x
         x = self.base_resnet.base.layer2(x)
-        x = self.MFA2(x, x_low)
+        x = self.SSM2(x, x_low)
         x = self.base_resnet.base.layer3(x)  
         x = self.base_resnet.base.layer4(x)
         global_feat = x
         b, c, h, w = x.shape
 
         #Generate part_num types of semantic style maps
-        masks = self.spatial_attention(global_feat) #get style maps
-        masks = self.activation(masks) # activation for maps，
+        masks = self.spatial_attention(global_feat) #generate style maps
+        masks = self.activation(masks) # activation for maps
         feats = []
         feat_logit_styles = []
         for i in range(self.part_num): #for each style map

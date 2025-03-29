@@ -35,11 +35,9 @@ parser.add_argument('--loss_tri', default='DMC', type=str, help='')
 parser.add_argument('--lr_scheduler', default='step',type=str, help='step or consine')
 parser.add_argument('--backbone', default='AGW',type=str, help='AGW')
 parser.add_argument('--lr', default=0.1, type=float,help='learning rate, 0.00035/0.0001 for adam,sgd 0.1')
-# parser.add_argument('--lr', default=1e-2, type=float,help='learning rate, 0.00035/0.0001 for adam,sgd 0.1')
 parser.add_argument('--workers', default=4, type=int, metavar='N',help='number of data loading workers (default: 4)')
 parser.add_argument('--img_w', default=192, type=int,metavar='imgw', help='img width')
 parser.add_argument('--img_h', default=384, type=int,metavar='imgh', help='img height')
-# parser.add_argument('--batch-size', default=6, type=int,metavar='B', help='training batch size')
 parser.add_argument('--batch-size', default=4, type=int,metavar='B', help='training batch size')
 parser.add_argument('--test-batch', default=64, type=int,metavar='tb', help='testing batch size')
 parser.add_argument('--margin', default=0.7, type=float, metavar='margin', help='triplet loss margin')
@@ -57,11 +55,11 @@ set_seed(args.seed)
 
 dataset = args.dataset
 
-# 将print输出重定向到文件
+# Redirect print output to a file
 if(dataset=='sysu'):
-    trainingLogFilePath = 'trainLog_QFEMFACAMPAM_sysu.txt'
+    trainingLogFilePath = 'trainLog_HSFLNet_sysu.txt'
 elif(dataset=='regdb'):
-    trainingLogFilePath = 'trainLog_QFEMFACAMPAM_regdb.txt'
+    trainingLogFilePath = 'trainLog_HSFLNet_regdb.txt'
 trainingLogFile = open(trainingLogFilePath, 'w')
 sys.stdout = trainingLogFile
 
@@ -469,17 +467,6 @@ for epoch in range(start_epoch, 150 - start_epoch):
             }
             torch.save(state, checkpoint_path + suffix + '_best.t')
 
-        # save model
-        # if epoch > 0 and epoch % args.save_epoch == 0:
-        #     state = {
-        #         'net': net.state_dict(),
-        #         'cmc': cmc,
-        #         'mAP': mAP,
-        #         'epoch': epoch,
-        #     }
-        #     torch.save(state, checkpoint_path + suffix +
-        #                '_epoch_{}.t'.format(epoch))
-
         print('POOL:   Rank-1: {:.2%} | Rank-5: {:.2%} | Rank-10: {:.2%}| Rank-20: {:.2%}| mAP: {:.2%}| mINP: {:.2%}'.format(
             cmc[0], cmc[4], cmc[9], cmc[19], mAP, mINP))
         print('FC:   Rank-1: {:.2%} | Rank-5: {:.2%} | Rank-10: {:.2%}| Rank-20: {:.2%}| mAP: {:.2%}| mINP: {:.2%}'.format(
@@ -487,5 +474,5 @@ for epoch in range(start_epoch, 150 - start_epoch):
         print('Best Epoch [{}]'.format(best_epoch))
 
 trainingLogFile.close()
-# 恢复标准输出
+# Restore standard output
 sys.stdout = sys.__stdout__

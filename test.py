@@ -62,7 +62,7 @@ args = parser.parse_args()
 
 dataset = args.dataset
 
-# 将print输出重定向到文件
+# Redirect print output to a file
 if(dataset=='sysu'):
     trainingLogFilePath = 'testLog_QFEMFACAMPAM_sysu_mode={}.txt'.format(args.mode)
 elif(dataset=='regdb'):

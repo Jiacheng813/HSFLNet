@@ -2,17 +2,12 @@ import numpy as np
 from PIL import Image
 import os
 
-
-
-# data_path = '/home/amax/zhujiacheng/SYSU-MM01/'
 data_path = '../datasets/SYSU-MM01/'
 rgb_cameras = ['cam1','cam2','cam4','cam5']
 ir_cameras = ['cam3','cam6']
 
 # load id info
-#'/root/HXC/reid/datasets/SYSU_MM01/exp/train_id.txt'
 file_path_train = os.path.join(data_path,'exp/train_id.txt')
-#'/root/HXC/reid/datasets/SYSU_MM01/exp/val_id.txt'
 file_path_val   = os.path.join(data_path,'exp/val_id.txt')
 with open(file_path_train, 'r') as file:
     ids = file.read().splitlines()
@@ -50,7 +45,6 @@ for id in sorted(id_train):
 #files_rgb files_ir
 # relabel
 pid_container = set()
-#img_path：'/root/HXC/reid/dataset/SYSU_MM01/cam3/0533/0020.jpg'
 for img_path in files_ir:
     #533
     pid = int(img_path[-13:-9])
@@ -65,7 +59,6 @@ fix_image_height = 384
 def read_imgs(train_image):
     train_img = []
     train_label = []
-    #img_path：'/root/HXC/reid/dataset/SYSU_MM01/cam3/0533/0020.jpg'
     for img_path in train_image:
         # img
         img = Image.open(img_path)
@@ -85,22 +78,13 @@ def read_imgs(train_image):
     return np.array(train_img), np.array(train_label)
        
 # rgb imges
-#['/root/HXC/reid/dataset/SYSU_MM01/cam1/0001/0001.jpg', '/root/HXC/reid/datas...1/0002.jpg', '/root/HXC/reid/datas...1/0003.jpg',
-# '/root/HXC/reid/datas...1/0004.jpg', '/root/HXC/reid/datas...1/0005.jpg', '/root/HXC/reid/datas...1/0006.jpg', 
-# '/root/HXC/reid/datas...1/0007.jpg', '/root/HXC/reid/datas...1/0008.jpg', '/root/HXC/reid/datas...1/0009.jpg', 
-# '/root/HXC/reid/datas...1/0010.jpg', '/root/HXC/reid/datas...1/0011.jpg', '/root/HXC/reid/datas...1/0012.jpg', 
-# '/root/HXC/reid/datas...1/0013.jpg', '/root/HXC/reid/datas...1/0014.jpg', ...]
+
 train_img, train_label = read_imgs(files_rgb)
 np.save(data_path + 'train_rgb_resized_img.npy', train_img)
 np.save(data_path + 'train_rgb_resized_label.npy', train_label)
 
 # ir imges
 #files_ir:
-#['/root/HXC/reid/dataset/SYSU_MM01/cam3/0001/0001.jpg', '/root/HXC/reid/datas...1/0002.jpg', '/root/HXC/reid/datas...1/0003.jpg', 
-# '/root/HXC/reid/datas...1/0004.jpg', '/root/HXC/reid/datas...1/0005.jpg', '/root/HXC/reid/datas...1/0006.jpg', 
-# '/root/HXC/reid/datas...1/0007.jpg', '/root/HXC/reid/datas...1/0008.jpg', '/root/HXC/reid/datas...1/0009.jpg', 
-# '/root/HXC/reid/datas...1/0010.jpg', '/root/HXC/reid/datas...1/0011.jpg', '/root/HXC/reid/datas...1/0012.jpg', 
-# '/root/HXC/reid/datas...1/0013.jpg', '/root/HXC/reid/datas...1/0014.jpg', ...]
 train_img, train_label = read_imgs(files_ir)
 #train_img:
 #train_label:array([  0,   0,   0, ..., 394, 394, 394])

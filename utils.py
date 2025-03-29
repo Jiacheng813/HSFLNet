@@ -72,15 +72,15 @@ class IdentitySampler(Sampler):
     """
 
     def __init__(self, train_color_label, train_thermal_label, color_pos, thermal_pos, num_pos, batchSize, epoch):
-        uni_label = np.unique(train_color_label)#不同的身份label的数组
+        uni_label = np.unique(train_color_label)  # Array of unique identity labels
         self.n_classes = len(uni_label)
 
         N = np.maximum(len(train_color_label), len(train_thermal_label))
-        for j in range(int(N/(batchSize*num_pos))+1):
-            batch_idx = np.random.choice(uni_label, batchSize, replace=False)#在不同的身份label中选batchSize个身份的序号
-            for i in range(batchSize): #在batchSize个身份中
+        for j in range(int(N / (batchSize * num_pos)) + 1):
+            batch_idx = np.random.choice(uni_label, batchSize, replace=False)  # Randomly select batchSize identity indices from different identity labels
+            for i in range(batchSize):  # For each of the batchSize identities
                 sample_color = np.random.choice(
-                    color_pos[batch_idx[i]], num_pos)#每个身份都在color_pos选num_pos个样本
+                    color_pos[batch_idx[i]], num_pos)  # For each identity, select num_pos samples from color_pos
                 sample_thermal = np.random.choice(
                     thermal_pos[batch_idx[i]], num_pos)
 
@@ -177,13 +177,6 @@ def set_seed(seed, cuda=True):
     torch.cuda.manual_seed_all(seed)  
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-#     # torch.use_deterministic_algorithms(True)
-# def set_seed(seed, cuda=True):
-#     np.random.seed(seed)
-#     torch.manual_seed(seed)
-#     if cuda:
-#         torch.cuda.manual_seed(seed)
-
 
 def set_requires_grad(nets, requires_grad=False):
     """Set requies_grad=Fasle for all the networks to avoid unnecessary computations

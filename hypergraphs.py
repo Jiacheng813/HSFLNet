@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: UTF-8 -*-
-# References :https://github.com/GouravWadhwa/Hypergraphs-Image-Inpainting
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
